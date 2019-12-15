@@ -89,12 +89,6 @@ class ImageConverter(object):
             print(str(e).capitalize())
             return False
 
-    def _convert_images_to_source(self):
-        pass
-
-    def convert_images(self, to_format=None):
-        to_format = self.TO_FORMAT if to_format is None else to_format
-        target_dir_exists = self._create_target_dir()
     # Todo: Refactor!
     # Todo: Enable override of cls.TO_FORMAT via parameter to_format
     def convert_images(self):
@@ -122,7 +116,7 @@ class ImageConverter(object):
                     # how to handle it; Return to abort the conversion.
                     return False
                 try:
-                    # Try to open image in target dir to see if it exists
+                    # Open target image to check if it exists.
                     print(f'Attempting to open image {target_img_name} in '
                           f'{self.target_dir.joinpath()}...')
                     with Image.open(self.target_dir.joinpath(
@@ -141,8 +135,8 @@ class ImageConverter(object):
                               f'{self.target_dir.joinpath()}', end='\n\n')
                         conversions += 1
                     continue
-                except Exception as e:
-                    print(str(e).capitalize())  # Something went wrong...
+                except Exception as e:  # Todo: Specify exceptions
+                    print(str(e).capitalize())
                     # Something unexpected went wrong and we don't know
                     # how to handle it; Return to abort the conversion.
                     return False
@@ -150,10 +144,11 @@ class ImageConverter(object):
                     print(f'Image {target_img_name} already exists in '
                           f'{self.target_dir.joinpath()}.')
                     continue  # Image already exist in target directory
-            if i > 0:
-                images_n_string = 'images' if i > 1 else 'image'
-                print(f'Converted {converted} of {i} {self.FROM_FORMAT.upper()}'
-                      f' {images_n_string} to {self.TO_FORMAT.upper()}',
+            if iterations > 0:
+                images_n_string = 'images' if iterations > 1 else 'image'
+                print(f'Converted {conversions} of {iterations} '
+                      f'{self.FROM_FORMAT.upper()} {images_n_string} to '
+                      f'{self.TO_FORMAT.upper()}',
                       end='\n\n')
                 return True  # Successfully converted at least 1 image
             raise ValueError(f'Could not find any {self.FROM_FORMAT.upper()} '
@@ -173,9 +168,6 @@ class ImageConverter(object):
               f'[converting from {self.FROM_FORMAT.upper()}]',
               f'Target folder: {self.target_dir.joinpath()} '
               f'[converting to {self.TO_FORMAT.upper()}]', sep='\n', end='\n\n')
-
-    def _count_source_images(self):
-        return len(list(self.source_images))
 
 
 if __name__ == '__main__':
