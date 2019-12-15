@@ -142,7 +142,7 @@ class ImageConverter(object):
                     return False
                 else:
                     print(f'Image {target_img_name} already exists in '
-                          f'{self.target_dir.joinpath()}.')
+                          f'{self.target_dir.joinpath()}.', end='\n\n')
                     continue  # Image already exist in target directory
             if iterations > 0:
                 images_n_string = 'images' if iterations > 1 else 'image'
