@@ -82,19 +82,23 @@ class ImageConverter(object):
                     return False
                 try:
                     # Try to open image in target dir to see if it exists
-                    print(f'Attempting to open image  {target_img_name}')
-                    Image.open(self.target_dir.joinpath(target_img_name))
+                    print(f'Attempting to open image {target_img_name} in '
+                          f'{self.target_dir.joinpath()}...')
+                    with Image.open(self.target_dir.joinpath(
+                            target_img_name)) as _:
+                        # Only attempt to open image to see if it exists
+                        pass
                 except FileNotFoundError:
                     print(
                         'The image does not exist, initiating conversion'
                         '...')
                     print(f'Converting image to {self.TO_FORMAT}...')
-                    source_image = Image.open(source_img.joinpath())
-                    source_image.save(self.target_dir.joinpath(
-                        f'{source_img.stem}.{to_format}'), to_format)
-                    print(f'Successfully saved {target_img_name} to '
-                          f'{self.target_dir.joinpath()}', end='\n\n')
-                    converted += 1
+                    with Image.open(source_img.joinpath()) as img:
+                        img.save(self.target_dir.joinpath(
+                            f'{source_img.stem}.{to_format}'), to_format)
+                        print(f'Successfully saved {target_img_name} to '
+                              f'{self.target_dir.joinpath()}', end='\n\n')
+                        conversions += 1
                     continue
                 except Exception as e:
                     print(str(e).capitalize())  # Something went wrong...
