@@ -1,0 +1,8 @@
+.idea/
+.vscode/
+
+venv/
+__pycache__/
+
+# Ignore any generated png images
+pokedex/*.png
