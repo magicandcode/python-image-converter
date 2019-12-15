@@ -1,5 +1,8 @@
-# Image Converter
-Python 3 image converter built with the Pillow library to easily convert any JPG images to PNG. Converted images can be stored in the source folder or a target folder that is created if it doesn't exist.
+# Python Image Converter
+Python 3 image converter built with the [Pillow library](https://pillow.readthedocs.io/en/stable/) to easily bulk convert JPG images to PNG.
+Converted images can be stored in the `source directory` or a `target directory` which is created if it doesn't already exist.
+
+This project is based on an exercise in the [Complete Python Developer:Zero to Mastery course](https://www.udemy.com/course/complete-python-developer-zero-to-mastery/?referralCode=D505BF7D33948CF0CC48).
 
 ### Installation
 Install all dependencies, preferably in a new virtual environment.
