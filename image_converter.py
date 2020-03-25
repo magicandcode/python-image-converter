@@ -31,9 +31,7 @@ def main(directories: Sequence[str]) -> None:
 
 
 class ImageConverter:
-    """Image converter able to bulk convert images.
-
-     from one format to
+    """Image converter able to bulk convert images from one format to
      another. Works with both relative and absolute directory paths.
     Uses the Pillow library and the pathlib module to handle images and
      paths.
@@ -41,7 +39,6 @@ class ImageConverter:
 
     FROM_FORMAT, TO_FORMAT = 'jpg', 'png'
     _directories = []
-    _source_images: None
     _version = 1.0
 
     def __init__(self, source_dir, target_dir=None):
