@@ -64,16 +64,16 @@ Source folder: pokedex [converting from JPG]
 Target folder: pokedex2 [converting to PNG]
 
 Attempting to open image  bulbasaur.png
-Image bulbasaur.png already exists in pokedex2ß
+Image bulbasaur.png already exists in pokedex2
 
 Attempting to open image  pikachu.png
-Image pikachu.png already exists in pokedex2ß
+Image pikachu.png already exists in pokedex2
 
 Attempting to open image  squirtle.png
-Image squirtle.png already exists in pokedex2ß
+Image squirtle.png already exists in pokedex2
 
 Attempting to open image  charmander.png
-Image charmander.png already exists in pokedex2ß
+Image charmander.png already exists in pokedex2
 
 Converted 0 of 4 JPG images to PNG
 ```

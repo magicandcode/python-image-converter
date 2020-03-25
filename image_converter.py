@@ -1,58 +1,79 @@
-"""
-Image Converter v. 1.0 by magicandcode
-Python 3 image converter built with the Pillow library to easily
- bulk convert JPG images to PNG. Currently only JPG to PNG is supported.
-Converted images can be stored in the `source directory` or a
- `target directory` which is created if it doesn't already exist.
+"""Convert images in source directory and save into target directory.
 
-The module can be used both as an imported module and run in the command
- line with directory arguments. Target directory is optional and the
- program will use the source directory as target if target is omitted.
+Args:
+    source - Dir with images to convert.
+    target -
+        Dir in which to save converted images.
+         (default: source_directory)
+Usage:
+    python3 -m image_converter <source> <[,target]>
 """
+
 import sys
 from pathlib import Path
+from typing import Sequence
 
 from PIL import Image
 
 
-class ImageConverter(object):
-    """Image converter able to bulk convert images from one format to
+def main(directories: Sequence[str]) -> None:
+    try:
+        # Use source as target if target is omitted.
+        if len(directories) == 1:
+            directories = directories[0], directories[0]
+        SOURCE_DIRECTORY, TARGET_DIRECTORY = directories
+    except (AttributeError, IndexError, TypeError, ValueError) as e:
+        raise e
+    else:
+        converter: ImageConverter = ImageConverter(SOURCE_DIRECTORY,
+                                                   TARGET_DIRECTORY)
+        converter.convert_images()
+
+
+class ImageConverter:
+    """Image converter able to bulk convert images.
+
+     from one format to
      another. Works with both relative and absolute directory paths.
     Uses the Pillow library and the pathlib module to handle images and
      paths.
     """
+
     FROM_FORMAT, TO_FORMAT = 'jpg', 'png'
     _directories = []
     _source_images: None
     _version = 1.0
 
     def __init__(self, source_dir, target_dir=None):
-        """Set target and source directory and display the header in the
-         console.
-        """
+        """Set directories and print program header."""
         self.directories = source_dir, target_dir
         self._get_header()
 
     @property
     def directories(self):
-        """Get source and target directories as a tuple."""
+        """Return source and target directories as tuple."""
         return self._directories
 
     @property
     def source_dir(self):
-        """Get source directory as a pathlib.Path object."""
+        """Return source directory as pathlib.Path object."""
         return Path(str(self.directories[0]))
 
     @property
     def target_dir(self):
-        """Get target directory as a pathlib.Path object."""
+        """Return target directory as pathlib.Path object."""
         return Path(str(self.directories[1]))
 
     @directories.setter
     def directories(self, dirs):
-        """Set directories given as a container and set to a tuple.
-        If only source directory is available, it is also used as
-         target.
+        """Set source and target directories as tuple.
+
+        Use source as target directory if target directory is omitted.
+
+        Arguments:
+            dirs -- source and target directory in ordered container
+        Exceptions:
+            AttributeError, TypeError, ValueError
         """
         try:
             if dirs[1] is None:
@@ -89,14 +110,20 @@ class ImageConverter(object):
             print(str(e).capitalize())
             return False
 
+    def _convert_image(self, source_img):
+        to_format = self.TO_FORMAT
+        with Image.open(source_img.joinpath()) as img:
+            img.save(
+                self.target_dir.joinpath(f'{source_img.stem}.{to_format}'),
+                to_format)
+
     # Todo: Refactor!
     # Todo: Enable override of cls.TO_FORMAT via parameter to_format
     def convert_images(self):
         """Convert FROM_FORMAT images in source directory to TO_FORMAT
         images and save in the target directory.
         """
-        from_format, to_format = self.FROM_FORMAT, self.TO_FORMAT
-
+        # Todo: Return bool or exception to be caught?
         if not self._create_target_dir():
             print('Unable to create target directory '
                   f'{self.target_dir.joinpath()}. Conversion process aborted.')
@@ -109,7 +136,7 @@ class ImageConverter(object):
             for iterations, source_img in enumerate(self._source_images):
                 try:
                     iterations += 1  # Add 1 to count the first image
-                    target_img_name = f'{source_img.stem}.{to_format}'
+                    target_img_name = f'{source_img.stem}.{self.TO_FORMAT}'
                 except (AttributeError, ValueError, TypeError) as e:
                     print(str(e).capitalize())
                     # Something unexpected went wrong and we don't know
@@ -119,21 +146,18 @@ class ImageConverter(object):
                     # Open target image to check if it exists.
                     print(f'Attempting to open image {target_img_name} in '
                           f'{self.target_dir.joinpath()}...')
-                    with Image.open(self.target_dir.joinpath(
-                            target_img_name)) as _:
+                    with Image.open(
+                            self.target_dir.joinpath(target_img_name)) as _:
                         # Only attempt to open image to see if it exists
                         pass
                 except FileNotFoundError:
-                    print(
-                        'The image does not exist, initiating conversion'
-                        '...')
+                    print('The image does not exist, initiating conversion'
+                          '...')
                     print(f'Converting image to {self.TO_FORMAT}...')
-                    with Image.open(source_img.joinpath()) as img:
-                        img.save(self.target_dir.joinpath(
-                            f'{source_img.stem}.{to_format}'), to_format)
-                        print(f'Successfully saved {target_img_name} to '
-                              f'{self.target_dir.joinpath()}', end='\n\n')
-                        conversions += 1
+                    self._convert_image(source_img)
+                    print(f'Successfully saved {target_img_name} to '
+                          f'{self.target_dir.joinpath()}', end='\n\n')
+                    conversions += 1
                     continue
                 except Exception as e:  # Todo: Specify exceptions
                     print(str(e).capitalize())
@@ -148,8 +172,7 @@ class ImageConverter(object):
                 images_n_string = 'images' if iterations > 1 else 'image'
                 print(f'Converted {conversions} of {iterations} '
                       f'{self.FROM_FORMAT.upper()} {images_n_string} to '
-                      f'{self.TO_FORMAT.upper()}',
-                      end='\n\n')
+                      f'{self.TO_FORMAT.upper()}', end='\n\n')
                 return True  # Successfully converted at least 1 image
             raise ValueError(f'Could not find any {self.FROM_FORMAT.upper()} '
                              'images in source folder '
@@ -157,12 +180,12 @@ class ImageConverter(object):
         except (ValueError, TypeError, AttributeError) as e:
             print('Unable to process conversion: ')
             print(str(e).capitalize())
+            return False
 
     def _get_header(self):
-        border = '*' * 45
-        print('',
-              border,
-              f' Image Converter v. {self._version}',
+        """Print program header with setup info."""
+        border = '*'*45
+        print('', border, f' Image Converter v. {self._version}',
               ' A project for Z2M Python by @magicandcode', border,
               f'Source folder: {self.source_dir.joinpath()} '
               f'[converting from {self.FROM_FORMAT.upper()}]',
@@ -175,13 +198,8 @@ if __name__ == '__main__':
         # Todo: Ask for input if no commandline arguments are given.
         # Get directories from command line arguments.
         directories = sys.argv[1:3]
-
-        # Use source as target if target is omitted.
-        if len(directories) == 1:
-            directories = directories[0], directories[0]
-    except Exception as e:
-        print('Unable to set source and target directory, please try again; ')
-        print(str(e).capitalize())
-    else:
-        converter = ImageConverter(*directories)
-        converter.convert_images()
+        main(directories)
+    except (AttributeError, IndexError, TypeError, ValueError) as e:
+            print('Unable to set source and target directory, please try '
+                  'again; ')
+            print(str(e).capitalize())

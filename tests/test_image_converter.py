@@ -1,38 +1,12 @@
-import shutil
-
 import pytest
-from pathlib import Path
 
 from image_converter import ImageConverter
 
 
-SOURCE, TARGET = 'pokedex', 'new_pokedex'
-
-
-def set_up():
-    """Remove target directory before running tests. If target is the same as
-    the source, the user is prompted to delete the generated files manually.
-    """
-    if SOURCE == TARGET:
-        print('Remove the converted files manually, the source directory will '
-              'not be removed...')
-        return False
-    try:
-        print('Removing target directory before tests...')
-        Path(TARGET).rmdir()
-        return True
-    except FileNotFoundError:
-        print('Target directory does not exists, continues with testing...')
-        return True  # Everything is already set up to run the tests
-    except OSError:
-        # Directory exists and is not empty
-        print(
-            'Target directory exists and is not empty, removing directory and '
-            'all of its content...')
-        shutil.rmtree(TARGET)  # Remove directory and its content
-
-
-set_up()
+# Default tests values for source and target directories when running
+#  tests. Absolute paths are also possible but it is recommended to
+# keep to these preset values when testing.
+SOURCE, TARGET = 'pokedex', 'pokedex_png'
 
 
 @pytest.fixture
@@ -74,13 +48,11 @@ def test_can_create_target_dir(converter):
 
 def test_can_convert_images_and_save_into_target_dir_if_target(converter):
     converter.convert_images()
-    assert len(list(
-        converter.target_dir.glob(f'*.{ImageConverter.TO_FORMAT}')
-    )) is 4
+    assert len(
+        list(converter.target_dir.glob(f'*.{ImageConverter.TO_FORMAT}'))) is 4
 
 
 def test_can_convert_images_and_save_into_target_dir_if_source(src_converter):
     src_converter.convert_images()
     assert len(list(
-        src_converter.target_dir.glob(f'*.{ImageConverter.TO_FORMAT}')
-    )) is 4
+        src_converter.target_dir.glob(f'*.{ImageConverter.TO_FORMAT}'))) is 4
