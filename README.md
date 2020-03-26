@@ -17,7 +17,7 @@ Target directory is optional. The program will save the converted files in the s
 Both relative and absolute paths can be used.
 
 ```
-cd <root of source> # If you are using a realtive source path
+cd <root of source> # If you are using a relative source path
 python3 -m image_converter <source> <[,target]>
 ```
 ```
@@ -27,7 +27,6 @@ python3 -m image_converter <source> <[,target]>
 *********************************************
 Source folder: pokedex [converting from JPG]
 Target folder: pokedex2 [converting to PNG]
-images-converter
 
 Attempting to open image  bulbasaur.png
 The image does not exist, initiating conversion...
